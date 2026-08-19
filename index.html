@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#15344a" />
+  <title>Banner Miles</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand-block">
+        <div class="brand-title">BANNER MILES</div>
+        <div class="brand-subtitle">Coastal Aerial Advertising</div>
+      </div>
+      <div class="hud-grid" aria-label="Game status">
+        <div class="hud-item"><span>Cash</span><strong id="cashValue">$0</strong></div>
+        <div class="hud-item"><span>Career</span><strong id="careerMilesValue">0.0 mi</strong></div>
+        <div class="hud-item"><span>Beach</span><strong id="beachValue">Driftwood Beach</strong></div>
+        <div class="hud-item"><span>Contract</span><strong id="contractValue">None</strong></div>
+      </div>
+    </header>
+
+    <main>
+      <section class="flight-card" aria-label="Flight view">
+        <div class="flight-hud">
+          <div class="meter-block">
+            <div class="meter-label"><span>FUEL</span><span id="fuelText">100%</span></div>
+            <div class="meter"><div id="fuelBar" class="meter-fill"></div></div>
+          </div>
+          <div class="flight-stat"><span>DISTANCE</span><strong id="distanceValue">0.00 mi</strong></div>
+          <div class="flight-stat"><span>PEOPLE REACHED</span><strong id="peopleValue">0</strong></div>
+          <div class="flight-stat"><span>FLIGHT EARNINGS</span><strong id="flightEarningsValue">$0</strong></div>
+        </div>
+
+        <div id="sky" class="sky stage-1">
+          <div class="sun"></div>
+          <div class="cloud cloud-a"></div>
+          <div class="cloud cloud-b"></div>
+          <div class="cloud cloud-c"></div>
+
+          <div id="planeRig" class="plane-rig">
+            <div class="plane-wrap">
+              <div class="smoke smoke-1"></div>
+              <div class="smoke smoke-2"></div>
+              <div class="plane">
+                <div class="propeller"></div>
+                <div class="wing"></div>
+                <div class="tail"></div>
+                <div class="window"></div>
+              </div>
+            </div>
+            <div class="tow-line"></div>
+            <div id="banner" class="banner">NO CONTRACT</div>
+          </div>
+
+          <div class="horizon"></div>
+          <div id="scenery" class="scenery"></div>
+          <div class="water"><div class="wave wave-a"></div><div class="wave wave-b"></div></div>
+          <div class="sand"></div>
+
+          <div class="zone-readout">
+            <span id="zoneName">Quiet Shore</span>
+            <strong id="crowdRate">150 people / mile</strong>
+          </div>
+        </div>
+
+        <div class="flight-controls">
+          <div class="capacity-panel">
+            <span>Banner Capacity</span>
+            <div class="capacity-values">
+              <b>MIN <span id="minWeight">25</span> lb</b>
+              <b>MED <span id="medWeight">50</span> lb</b>
+              <b>MAX <span id="maxWeight">75</span> lb</b>
+            </div>
+            <small id="rangeEstimate">MED banner range: 3.0 mi</small>
+          </div>
+          <button id="flightButton" class="primary-button">Choose a Contract</button>
+        </div>
+      </section>
+
+      <nav class="tabs" aria-label="Game sections">
+        <button class="tab active" data-tab="contracts">Contracts</button>
+        <button class="tab" data-tab="upgrades">Upgrades <span id="upgradeCount">0/30</span></button>
+        <button class="tab" data-tab="beaches">Beaches <span id="beachCount">1/8</span></button>
+      </nav>
+
+      <section id="contractsPanel" class="panel active-panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Banner Contracts</h2>
+            <p id="contractInstruction">Choose one advertiser. You are committed until its required flights are complete.</p>
+          </div>
+          <button id="refreshContractsButton" class="secondary-button" type="button">New Offers</button>
+        </div>
+        <div id="activeContractCard" class="active-contract hidden"></div>
+        <div id="contractsGrid" class="contract-grid"></div>
+      </section>
+
+      <section id="upgradesPanel" class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Plane Upgrade Tree</h2>
+            <p>One plane. Thirty upgrades. Every purchase permanently improves it.</p>
+          </div>
+        </div>
+        <div id="upgradeTree" class="upgrade-tree"></div>
+      </section>
+
+      <section id="beachesPanel" class="panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Coastal Route</h2>
+            <p>New beaches unlock with career miles. Busier beaches mean more people per mile.</p>
+          </div>
+        </div>
+        <div id="beachGrid" class="beach-grid"></div>
+      </section>
+    </main>
+
+    <footer>
+      <span>Prototype build — gameplay first, art later.</span>
+      <button id="resetButton" class="text-button" type="button">Reset Save</button>
+    </footer>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="game.js"></script>
+</body>
+</html>
