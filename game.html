@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#78c9f6">
+<title>Banner Miles</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Arial,Helvetica,sans-serif;color:#163a57;background:#8dd0f7;touch-action:manipulation}
+body{overscroll-behavior:none;user-select:none}
+button{font:inherit}
+.app{height:100dvh;display:grid;grid-template-rows:auto 1fr auto;gap:6px;padding:max(6px,env(safe-area-inset-top)) max(6px,env(safe-area-inset-right)) max(6px,env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-left));background:linear-gradient(#84cdf6,#bceafa)}
+.top{display:flex;gap:8px;align-items:center;min-height:58px;padding:8px 10px;background:#f7fbfd;border:3px solid #173d59;border-radius:14px;box-shadow:0 4px 0 #173d5930}
+.brand{min-width:150px}.brand h1{margin:0;font-size:20px;letter-spacing:.03em}.brand small{color:#5a7b93;font-size:11px}
+.topstats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;flex:1}.topstat{background:#eaf7fd;border:2px solid #2a5b7d;border-radius:10px;padding:6px 8px;min-width:0}.topstat span{display:block;font-size:9px;font-weight:700;color:#5c7c94;text-transform:uppercase}.topstat strong{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pages{position:relative;min-height:0}.page{display:none;height:100%}.page.active{display:flex}
+.page-card{height:100%;width:100%;min-height:0;background:#f8fcfe;border:3px solid #173d59;border-radius:15px;box-shadow:0 4px 0 #173d5930;padding:8px;display:flex;flex-direction:column;gap:7px;overflow:hidden}
+.play-card{display:grid;grid-template-rows:auto 1fr auto auto;gap:7px}
+.flight-hud{display:grid;grid-template-columns:1.2fr repeat(3,1fr);gap:6px}.hudbox{background:#eaf7fd;border:2px solid #2a5b7d;border-radius:10px;padding:6px 8px;min-width:0}.hudbox span{display:block;font-size:9px;font-weight:700;color:#5c7c94;text-transform:uppercase}.hudbox strong{font-size:13px}.fuel-track{height:10px;background:#cde8f5;border:2px solid #2a5b7d;border-radius:999px;overflow:hidden;margin-top:3px}.fuel-fill{height:100%;width:100%;background:linear-gradient(90deg,#37c869,#a7df54)}
+.scene{position:relative;min-height:0;overflow:hidden;border:3px solid #173d59;border-radius:13px;background:linear-gradient(#79c9f7 0 58%,#9ed4f1 58% 59%,#ecd81b 59% 83%,#0f9a70 83% 86%,#1565ed 86%)}
+.sun{position:absolute;right:8%;top:10%;width:58px;height:58px;border-radius:50%;background:#f1da77;border:4px solid #b88421;z-index:1}.cloud{position:absolute;width:64px;height:20px;background:#f7fbfd;border:2px solid #c6d8e4;border-radius:24px;z-index:1}.cloud:before,.cloud:after{content:"";position:absolute;background:inherit;border:inherit;border-radius:50%}.cloud:before{width:24px;height:24px;left:8px;top:-11px}.cloud:after{width:20px;height:20px;right:8px;top:-8px}.c1{top:13%;left:10%}.c2{top:24%;left:60%;transform:scale(1.18)}.c3{top:10%;left:76%;transform:scale(.85)}
+.skyline{position:absolute;left:0;right:0;bottom:29%;height:30%;z-index:2;pointer-events:none}.bg-buildings{position:absolute;inset:0;display:flex;align-items:flex-end;gap:5px;padding:0 10px}.tower{flex:0 0 auto;background:#715605;border:3px solid #4d3901;border-bottom:0;border-radius:5px 5px 0 0;opacity:.9}.tower:after{content:"";display:block;width:100%;height:100%;background:repeating-linear-gradient(90deg,rgba(255,220,145,.17) 0 6px,transparent 6px 12px),repeating-linear-gradient(180deg,rgba(255,220,145,.17) 0 6px,transparent 6px 12px)}
+.boardwalk{position:absolute;left:0;right:0;bottom:22%;height:7%;background:#d2b574;border-top:3px solid #6a5312;border-bottom:3px solid #6a5312;opacity:.35;z-index:2}
+.rig{position:absolute;left:5%;top:36%;display:flex;align-items:center;z-index:4;animation:bob 1.8s ease-in-out infinite}.banner{order:1;width:150px;max-width:150px;background:#fff6cf;border:3px solid #725314;border-radius:6px;padding:7px 8px;font-size:11px;font-weight:800;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 3px 0 #0002}.cable{order:2;width:28px;border-top:4px dashed #51616b;margin:0 6px}.plane{order:3;position:relative;width:126px;height:67px}.fuselage{position:absolute;left:22px;top:26px;width:74px;height:20px;background:#f0d089;border:3px solid #6b501b;border-radius:18px 28px 16px 14px;z-index:3}.nose{position:absolute;right:12px;top:29px;width:22px;height:14px;background:#e8c16d;border:3px solid #6b501b;border-left:0;border-radius:0 16px 16px 0;z-index:3}.cockpit{position:absolute;left:49px;top:17px;width:24px;height:17px;background:#cbeeff;border:3px solid #315a76;border-bottom:0;border-radius:12px 12px 3px 3px;z-index:4}.tailbody{position:absolute;left:8px;top:28px;width:19px;height:15px;background:#e8c570;border:3px solid #6b501b;border-right:0;z-index:2}.tailfin{position:absolute;left:10px;top:11px;width:16px;height:23px;background:#e8c570;border:3px solid #6b501b;clip-path:polygon(0 100%,28% 10%,100% 0,100% 100%);z-index:1}.wing{position:absolute;left:38px;top:8px;width:58px;height:13px;background:#e8c570;border:3px solid #6b501b;border-radius:8px;transform:skewX(13deg);z-index:2}.wing2{position:absolute;left:40px;top:46px;width:52px;height:12px;background:#e8c570;border:3px solid #6b501b;border-radius:8px;transform:skewX(-13deg);z-index:1}.prop{position:absolute;right:1px;top:16px;width:11px;height:38px;border-left:4px solid #536676;z-index:5;animation:prop .12s linear infinite}.prop:before,.prop:after{content:"";position:absolute;left:-9px;width:18px;height:7px;background:#9faeba;border:2px solid #536676;border-radius:8px}.prop:before{top:1px;transform:rotate(28deg)}.prop:after{bottom:1px;transform:rotate(-28deg)}
+.smoke{position:absolute;left:0;top:31px;width:13px;height:13px;border-radius:50%;background:#66727d88;z-index:0;animation:smoke 1.5s ease-out infinite}.smoke.s2{animation-delay:.6s}.stage-2 .smoke{opacity:.55}.stage-3 .smoke{opacity:.2}.stage-4 .smoke,.stage-5 .smoke{display:none}
+.zone{position:absolute;right:8px;bottom:8px;background:#edf9feee;border:2px solid #2a5b7d;border-radius:10px;padding:5px 8px;font-size:11px;z-index:5}.zone strong{display:block;font-size:13px}
+.play-status{display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:36px}.status-pill{background:#eaf7fd;border:2px solid #2a5b7d;border-radius:10px;padding:6px 8px;font-size:12px;flex:1}.status-pill strong{display:block;font-size:13px}.action-row{display:flex;gap:8px;min-height:44px}.primary{flex:1;border:3px solid #173d59;border-radius:11px;background:#ffe078;color:#173d59;font-weight:800;font-size:14px;box-shadow:0 3px 0 #173d5930}.primary.danger{background:#ffb1a5}.primary:disabled{opacity:.5}.ghost{flex:1;border:3px solid #2a5b7d;border-radius:11px;background:#eef9fe;color:#173d59;font-weight:800}
+.page-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}.page-head h2{margin:0;font-size:18px}.page-head p{margin:2px 0 0;font-size:11px;color:#587892}.scroll{min-height:0;overflow:auto;padding-right:3px}.card-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.card{background:#eaf7fd;border:2px solid #2a5b7d;border-radius:10px;padding:8px}.card h3{margin:0 0 6px;font-size:14px}.meta{font-size:11px;line-height:1.4;color:#355d79}.tag{display:inline-block;border:2px solid #2a5b7d;border-radius:999px;padding:2px 6px;font-size:9px;font-weight:800;margin-left:4px}.light{background:#d9edfb}.good{background:#d0f6d7}.heavy{background:#ffe3aa}.locked{background:#ffd0c8}.card button,.secondary{margin-top:7px;border:2px solid #173d59;border-radius:8px;background:#ffe078;color:#173d59;font-weight:800;padding:7px 8px}.card button:disabled{opacity:.5}.active-contract{background:#d0f6d7}.upgrade-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.branch{background:#dcedf8;border:2px solid #2a5b7d;border-radius:11px;padding:8px}.branch h3{margin:0 0 3px;font-size:14px}.branch p{margin:0 0 6px;font-size:10px;color:#587892}.upgrade{background:#eef9fe;border:2px solid #6a91ad;border-radius:8px;padding:7px;margin-bottom:6px}.upgrade.bought{background:#d0f6d7}.upgrade h4{margin:0;font-size:12px}.upgrade small{font-size:10px;color:#587892}.upgrade button{float:right;border:1px solid #173d59;border-radius:6px;background:#ffe078;font-size:10px;font-weight:800}.stats-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.statcard{background:#eaf7fd;border:2px solid #2a5b7d;border-radius:10px;padding:12px}.statcard span{font-size:10px;text-transform:uppercase;color:#587892}.statcard strong{display:block;font-size:20px;margin-top:3px}
+.nav{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}.nav button{height:44px;border:3px solid #173d59;border-radius:11px;background:#eef9fe;color:#173d59;font-weight:800;font-size:12px;box-shadow:0 3px 0 #173d5930}.nav button.active{background:#ffe078;transform:translateY(1px);box-shadow:0 2px 0 #173d5930}.toast{position:fixed;left:50%;bottom:60px;transform:translateX(-50%);background:#173d59;color:#fff;border:3px solid #dff4ff;border-radius:10px;padding:8px 11px;font-size:11px;opacity:0;pointer-events:none;transition:.18s;z-index:50}.toast.show{opacity:1}
+@keyframes prop{to{transform:scaleY(.8)}}@keyframes bob{50%{transform:translateY(-5px)}}@keyframes smoke{to{transform:translate(-30px,-11px) scale(1.7);opacity:0}}
+@media(max-width:760px){.app{gap:4px;padding:4px max(4px,env(safe-area-inset-right)) max(4px,env(safe-area-inset-bottom)) max(4px,env(safe-area-inset-left))}.top{min-height:48px;padding:5px 6px}.brand{min-width:98px}.brand h1{font-size:15px}.brand small{display:none}.topstats{gap:3px}.topstat{padding:4px}.topstat span{font-size:7px}.topstat strong{font-size:10px}.page-card{padding:6px;gap:5px}.play-card{grid-template-rows:auto 1fr auto auto}.flight-hud{grid-template-columns:1.1fr repeat(3,1fr);gap:3px}.hudbox{padding:4px}.hudbox span{font-size:7px}.hudbox strong{font-size:10px}.fuel-track{height:8px}.sun{width:42px;height:42px}.rig{left:4%;top:34%;transform:scale(.78);transform-origin:left center}.banner{width:105px;max-width:105px;font-size:9px;padding:6px}.cable{width:22px;margin:0 4px}.skyline{bottom:28%;height:28%}.tower{border-width:2px}.zone{font-size:9px}.zone strong{font-size:11px}.status-pill{font-size:10px;padding:5px 6px}.status-pill strong{font-size:11px}.action-row{min-height:36px}.primary,.ghost{font-size:12px}.page-head h2{font-size:15px}.page-head p{font-size:9px}.card-grid,.upgrade-grid,.stats-grid{grid-template-columns:1fr 1fr}.card h3{font-size:12px}.meta,.upgrade small{font-size:10px}.nav button{height:40px;font-size:10px;padding:0 2px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="brand"><h1>BANNER MILES</h1><small>Coastal Aerial Advertising</small></div>
+    <div class="topstats" aria-label="Game status">
+      <div class="topstat"><span>Cash</span><strong id="cashValue">$0</strong></div>
+      <div class="topstat"><span>Career</span><strong id="careerMilesValue">0.0 mi</strong></div>
+      <div class="topstat"><span>Beach</span><strong id="beachValue">Driftwood Beach</strong></div>
+      <div class="topstat"><span>Contract</span><strong id="contractValue">None</strong></div>
+    </div>
+  </header>
+
+  <main class="pages">
+    <section id="playPage" class="page active">
+      <div class="page-card play-card">
+        <div class="flight-hud">
+          <div class="hudbox"><span>Fuel</span><strong id="fuelText">100%</strong><div class="fuel-track"><div id="fuelBar" class="fuel-fill"></div></div></div>
+          <div class="hudbox"><span>Distance</span><strong id="distanceValue">0.00 mi</strong></div>
+          <div class="hudbox"><span>People</span><strong id="peopleValue">0</strong></div>
+          <div class="hudbox"><span>Flight $</span><strong id="flightEarningsValue">$0</strong></div>
+        </div>
+
+        <div id="scene" class="scene stage-1">
+          <div class="sun"></div>
+          <div class="cloud c1"></div>
+          <div class="cloud c2"></div>
+          <div class="cloud c3"></div>
+
+          <div class="skyline">
+            <div id="bgBuildings" class="bg-buildings"></div>
+          </div>
+          <div class="boardwalk"></div>
+
+          <div class="rig">
+            <div id="banner" class="banner">NO CONTRACT</div>
+            <div class="cable"></div>
+            <div class="plane">
+              <div class="smoke"></div>
+              <div class="smoke s2"></div>
+              <div class="tailfin"></div>
+              <div class="tailbody"></div>
+              <div class="wing"></div>
+              <div class="wing2"></div>
+              <div class="fuselage"></div>
+              <div class="cockpit"></div>
+              <div class="nose"></div>
+              <div class="prop"></div>
+            </div>
+          </div>
+
+          <div class="zone"><span id="zoneName">Quiet Shore</span><strong id="crowdRate">150 people / mile</strong></div>
+        </div>
+
+        <div class="play-status">
+          <div class="status-pill"><span>Active Contract</span><strong id="playContractStatus">No contract selected</strong></div>
+          <div class="status-pill"><span>Flight Range</span><strong id="playRangeStatus">3.0 mi on a MED banner</strong></div>
+        </div>
+
+        <div class="action-row">
+          <button id="endFlightButton" class="primary danger" type="button" hidden>End Flight</button>
+          <button id="startFlightButton" class="primary" type="button" hidden>Start Flight</button>
+          <button id="openContractsButton" class="ghost" type="button">Open Contracts</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="contractsPage" class="page">
+      <div class="page-card">
+        <div class="page-head">
+          <div>
+            <h2>Banner Contracts</h2>
+            <p>Pick a business, then fly that same banner until the contract is complete.</p>
+          </div>
+          <button id="refreshContractsButton" class="secondary" type="button">New Offers</button>
+        </div>
+        <div class="card active-contract" id="activeContractCard"></div>
+        <div class="scroll"><div id="contractsGrid" class="card-grid"></div></div>
+      </div>
+    </section>
+
+    <section id="upgradesPage" class="page">
+      <div class="page-card">
+        <div class="page-head"><div><h2>Plane Upgrades</h2><p>Thirty upgrades across power, fuel, efficiency, and advertising.</p></div></div>
+        <div class="scroll"><div id="upgradeTree" class="upgrade-grid"></div></div>
+      </div>
+    </section>
+
+    <section id="beachesPage" class="page">
+      <div class="page-card">
+        <div class="page-head"><div><h2>Beaches</h2><p>Unlock new coasts with career miles and reach more people per flight.</p></div></div>
+        <div class="scroll"><div id="beachGrid" class="card-grid"></div></div>
+      </div>
+    </section>
+
+    <section id="statsPage" class="page">
+      <div class="page-card">
+        <div class="page-head"><div><h2>Stats</h2><p>Quick look at your current plane and progress.</p></div></div>
+        <div class="scroll"><div id="statsGrid" class="stats-grid"></div></div>
+        <button id="resetButton" class="ghost" type="button">Reset Save</button>
+      </div>
+    </section>
+  </main>
+
+  <nav class="nav" aria-label="Page navigation">
+    <button data-page="playPage" class="active">Play</button>
+    <button data-page="contractsPage">Contracts</button>
+    <button data-page="upgradesPage">Upgrades</button>
+    <button data-page="beachesPage">Beaches</button>
+    <button data-page="statsPage">Stats</button>
+  </nav>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+(()=>{
+'use strict';
+
+const SAVE='bannerMilesSave_v2';
+const TICK=100;
+const BASE_CRUISE=.42;
+
+const beaches=[
+{id:'driftwood',name:'Driftwood Beach',unlock:0,avg:400,desc:'Cheap motels, fishing pier, and long quiet stretches.',rates:[.02,.04],weights:[20,70],zones:[['Quiet Shore',150],['Motel Strip',350],['Fishing Pier',650],['Public Beach',900],['Quiet Shore',200]]},
+{id:'pelican',name:'Pelican Point',unlock:50,avg:700,desc:'A small tourist beach with a growing summer crowd.',rates:[.03,.06],weights:[40,100],zones:[['Beach Houses',350],['Marina',700],['Hotel Row',950],['Public Beach',1200],['Coastal Road',500]]},
+{id:'boardwalk',name:'Boardwalk Bay',unlock:250,avg:1400,desc:'Hotels, restaurants, rides, and a busy boardwalk.',rates:[.05,.09],weights:[70,150],zones:[['Condos',800],['Boardwalk',1800],['Amusement Pier',2400],['Hotel District',1600],['Open Beach',1000]]},
+{id:'sunset',name:'Sunset Shores',unlock:1000,avg:2400,desc:'A large vacation destination with steady crowds.',rates:[.08,.14],weights:[110,220],zones:[['Vacation Homes',1400],['Resort Strip',2800],['Public Beach',3600],['Restaurant Row',2500],['South Shore',1700]]},
+{id:'palm',name:'Palm Harbor',unlock:5000,avg:4800,desc:'Packed resorts, marina traffic, and premium advertisers.',rates:[.12,.22],weights:[170,320],zones:[['Marina',3000],['Resort Beach',5600],['Convention Hotel',7000],['Shopping District',4700],['North Beach',3500]]},
+{id:'coral',name:'Coral City',unlock:15000,avg:8500,desc:'A full coastal city with towers and year-round visitors.',rates:[.18,.32],weights:[250,430],zones:[['Harbor',5000],['High-Rise Coast',9000],['City Beach',12500],['Entertainment Strip',10800],['Outer Coast',6200]]},
+{id:'grand',name:'Grand Coast',unlock:40000,avg:15000,desc:'A major destination packed with national brands.',rates:[.28,.50],weights:[350,580],zones:[['Resort Towers',10500],['Festival Beach',22000],['Boardwalk Core',25000],['Hotel Canyon',14500],['Yacht Harbor',12000]]},
+{id:'golden',name:'Golden Strand',unlock:100000,avg:28000,desc:'The final beach: huge crowds, luxury resorts, and major advertisers.',rates:[.45,.80],weights:[500,750],zones:[['Luxury Marina',18000],['Golden Boardwalk',32000],['Mega Resort',42000],['Event Beach',50000],['Skyline Coast',26000]]}
+];
+
+const names=[["Benny's Bait & Ice",'Driftwood Pizza','Pier 9 Tackle',"Lou's Beach Dogs",'Seaside Mini Golf',"Captain Joe's Seafood"],['Pelican Surf Shop','Point Realty','Salty Cone Ice Cream','Harbor Grill','Wave Rider Rentals','Pelican Inn'],['Boardwalk Arcade','Neon Crab Shack','Bayview Hotels','Coaster Pier','Boardwalk Outfitters','Sunset Soda'],['Sunset Resorts','Coastal Motors','Shoreline Brewing','VacationNow','Ocean Club','Sunset Concert Series'],['Palm Harbor Resort','Bluewater Casino','Coastline Bank','Marina Marketplace','Palm Air Tours','Golden Tan Sunscreen'],['Coral City Hotels','Atlantic Wireless','Coral Energy','Metro Motors','Oceanfront Live','Coastal Credit'],['Grand Coast Resorts','National Cola','SunWave Mobile','Grand Coast Racing','Liberty Insurance','American Beachwear'],['Golden Strand Casino','National Resorts','Apex Motors','Skyline Financial','Victory Sports','Continental Wireless']];
+
+const branches=[
+{id:'power',name:'Power',desc:'Tow heavier banners and increase cruise speed.',nodes:[['p1','Engine Tune-Up',75,'Capacity 35 / 65 / 95 lb',{capacity:[35,65,95],speed:1.08}],['p2','Carburetor Rebuild',250,'Capacity 50 / 90 / 125 lb',{capacity:[50,90,125],speed:1.08}],['p3','New Propeller',900,'Capacity 70 / 125 / 170 lb',{capacity:[70,125,170],speed:1.09}],['p4','Cylinder Overhaul',3000,'Capacity 100 / 175 / 235 lb',{capacity:[100,175,235],speed:1.10}],['p5','Performance Exhaust',12000,'Capacity 140 / 245 / 325 lb',{capacity:[140,245,325],speed:1.11}],['p6','High-Compression Engine',50000,'Capacity 195 / 345 / 450 lb',{capacity:[195,345,450],speed:1.12}],['p7','Heavy Tow Package',220000,'Capacity 265 / 485 / 625 lb',{capacity:[265,485,625],speed:1.13}],['p8','Coastal Performance Engine',1200000,'Capacity 355 / 665 / 850 lb',{capacity:[355,665,850],speed:1.15}]]},
+{id:'fuel',name:'Fuel',desc:'Increase the distance a MED-weight banner can fly.',nodes:[['f1','Patched Fuel Tank',100,'MED range 5 miles',{range:5}],['f2','Larger Tank',300,'MED range 8 miles',{range:8}],['f3','New Fuel System',1000,'MED range 13 miles',{range:13}],['f4','Auxiliary Tank',4000,'MED range 22 miles',{range:22}],['f5','Extended Tank',15000,'MED range 35 miles',{range:35}],['f6','Long-Range Tank',60000,'MED range 55 miles',{range:55}],['f7','Extended Fuel System',250000,'MED range 85 miles',{range:85}],['f8','Endurance Fuel System',1000000,'MED range 130 miles',{range:130}]]},
+{id:'efficiency',name:'Efficiency',desc:'Stretch each tank and reduce heavy-banner penalties.',nodes:[['e1','Seal the Cowling',150,'5% less fuel used',{efficiency:.05}],['e2','Balance the Prop',500,'5% less fuel used',{efficiency:.05}],['e3','Streamlined Tow Cable',1500,'7% less fuel used',{efficiency:.07}],['e4','Weight Reduction',6000,'8% less fuel used',{efficiency:.08}],['e5','Cleaner Airframe',25000,'10% less fuel used',{efficiency:.10}],['e6','Cruise Tuning',100000,'12% less fuel used',{efficiency:.12}],['e7','Precision Fuel System',450000,'15% less fuel used',{efficiency:.15}]]},
+{id:'advertising',name:'Advertising',desc:'Make more of the crowd notice every banner you tow.',nodes:[['a1','Clean Banner Rig',125,'+5% people reached',{audience:.05}],['a2','Better Banner Position',450,'+7% people reached',{audience:.07}],['a3','Local Reputation',1800,'+8% people reached',{audience:.08}],['a4','Prime Tow Position',7500,'+10% people reached',{audience:.10}],['a5','Regional Reputation',30000,'+12% people reached',{audience:.12}],['a6','Premium Advertising',125000,'+15% people reached',{audience:.15}],['a7','National Reputation',600000,'+20% people reached',{audience:.20}]]}
+];
+
+const fresh=()=>({money:0,careerMiles:0,currentBeach:0,purchased:[],contract:null,offers:[],totalPeople:0,flights:0,currentPage:'playPage'});
+let state=load(),flight=null,lastTick=null,toastTimer=null;
+
+const $=id=>document.getElementById(id);
+const el={cash:$('cashValue'),career:$('careerMilesValue'),beach:$('beachValue'),contract:$('contractValue'),fuelText:$('fuelText'),fuelBar:$('fuelBar'),distance:$('distanceValue'),people:$('peopleValue'),earnings:$('flightEarningsValue'),banner:$('banner'),zone:$('zoneName'),crowd:$('crowdRate'),playContract:$('playContractStatus'),playRange:$('playRangeStatus'),startBtn:$('startFlightButton'),endBtn:$('endFlightButton'),openContracts:$('openContractsButton'),refresh:$('refreshContractsButton'),activeContract:$('activeContractCard'),contracts:$('contractsGrid'),upgrades:$('upgradeTree'),beaches:$('beachGrid'),stats:$('statsGrid'),scene:$('scene'),bg:$('bgBuildings'),reset:$('resetButton'),pages:[...document.querySelectorAll('.page')],nav:[...document.querySelectorAll('.nav button')]};
+
+function load(){try{return {...fresh(),...JSON.parse(localStorage.getItem(SAVE)||'{}')}}catch{return fresh()}}
+function save(){localStorage.setItem(SAVE,JSON.stringify(state))}
+function cash(v){if(v<1000)return '$'+Math.round(v).toLocaleString();for(const [s,d] of [['T',1e12],['B',1e9],['M',1e6],['K',1e3]])if(v>=d)return '$'+(v/d).toFixed(v>=d*100?0:v>=d*10?1:2)+s;return '$'+Math.round(v).toLocaleString()}
+const num=v=>Math.floor(v).toLocaleString();
+const has=id=>state.purchased.includes(id);
+
+function stats(){let capacity=[25,50,75],baseRange=3,speed=1,efficiency=0,audience=0;for(const b of branches)for(const n of b.nodes)if(has(n[0])){const e=n[4];if(e.capacity)capacity=e.capacity;if(e.range)baseRange=e.range;if(e.speed)speed*=e.speed;if(e.efficiency)efficiency+=e.efficiency;if(e.audience)audience+=e.audience}return{capacity,baseRange,speed,efficiency:Math.min(.62,efficiency),audience}}
+function weightClass(w){const [min,med,max]=stats().capacity;if(w>max)return{key:'locked',label:'TOO HEAVY',fuel:Infinity};if(w<=min)return{key:'light',label:'LIGHT',fuel:.9};if(w<=med)return{key:'good',label:'MED - IDEAL',fuel:1};return{key:'heavy',label:'HEAVY',fuel:1.3}}
+function rangeFor(w){const s=stats(),c=weightClass(w);return Number.isFinite(c.fuel)?s.baseRange/(c.fuel*(1-s.efficiency)):0}
+function unlockedCount(){return beaches.filter(b=>state.careerMiles>=b.unlock).length}
+function stage(){const n=state.purchased.length;return n>=27?5:n>=21?4:n>=13?3:n>=6?2:1}
+function nextBeachGoal(){return beaches.find(b=>state.careerMiles<b.unlock)}
+
+function generateOffers(){if(state.contract||flight)return;const bi=state.currentBeach,b=beaches[bi],pool=names[bi],out=[],used=new Set();while(out.length<3){const ni=Math.floor(Math.random()*pool.length);if(used.has(ni))continue;used.add(ni);const weight=Math.round(b.weights[0]+(b.weights[1]-b.weights[0])*(.1+Math.random()*.82));const rate=b.rates[0]+(b.rates[1]-b.rates[0])*Math.random();const flights=3+Math.floor(Math.random()*Math.min(8,2+bi));out.push({id:`${Date.now()}_${ni}_${out.length}`,business:pool[ni],beachIndex:bi,weight:Math.max(b.weights[0],Math.min(b.weights[1],weight)),rate:+rate.toFixed(3),flightsTotal:flights,flightsRemaining:flights})}const max=stats().capacity[2];if(!out.some(o=>o.weight<=max))out[0].weight=Math.max(b.weights[0],Math.floor(max*.72));state.offers=out;save()}
+function accept(id){if(state.contract||flight)return;const o=state.offers.find(x=>x.id===id);if(!o)return;if(weightClass(o.weight).key==='locked'){toast('That banner is above your current MAX tow weight.');return}state.contract={...o};state.offers=[];state.currentPage='playPage';save();render();toast(`${o.business} contract accepted.`)}
+function startFlight(){if(!state.contract||flight)return;const r=rangeFor(state.contract.weight);if(!r)return;flight={distance:0,people:0,earnings:0,fuel:100,range:r};lastTick=performance.now();state.currentPage='playPage';save();render();requestAnimationFrame(tick)}
+function endFlight(reason='manual'){if(!flight)return;const f=flight;flight=null;lastTick=null;const before=unlockedCount();state.money+=f.earnings;state.careerMiles+=f.distance;state.totalPeople+=f.people;state.flights++;if(state.contract){state.contract.flightsRemaining--;if(state.contract.flightsRemaining<=0){const name=state.contract.business;state.contract=null;generateOffers();toast(`${name} contract complete.`)}else{toast(`${reason==='fuel'?'Fuel exhausted.':'Flight ended early.'} ${state.contract.flightsRemaining} flight${state.contract.flightsRemaining===1?'':'s'} remaining.`)}}const after=unlockedCount();if(after>before)toast(`${beaches[after-1].name} unlocked!`);save();render()}
+function tick(now){if(!flight)return;const dt=Math.min(.25,(now-lastTick)/1000);lastTick=now;const s=stats(),miles=BASE_CRUISE*s.speed*dt;flight.distance+=miles;flight.fuel=Math.max(0,100*(1-flight.distance/flight.range));const b=beaches[state.currentBeach],zone=b.zones[Math.floor(flight.distance/1.2)%b.zones.length],pulse=.92+Math.sin(now/850)*.08+Math.sin(now/2900)*.05,reached=miles*zone[1]*(1+s.audience)*pulse;flight.people+=Math.max(0,reached);flight.earnings=flight.people*state.contract.rate;renderFlight(zone);if(flight.fuel<=.001){endFlight('fuel');return}setTimeout(()=>requestAnimationFrame(tick),TICK)}
+function buy(id){if(flight)return;for(const b of branches){const i=b.nodes.findIndex(n=>n[0]===id);if(i<0)continue;const n=b.nodes[i];if(has(id)||i>0&&!has(b.nodes[i-1][0]))return;if(state.money<n[2]){toast(`You need ${cash(n[2]-state.money)} more.`);return}state.money-=n[2];state.purchased.push(id);save();render();toast(`${n[1]} installed.`);return}}
+function travel(i){if(flight||state.contract){toast(state.contract?'Finish the current contract before changing beaches.':'End the flight before changing beaches.');return}if(state.careerMiles<beaches[i].unlock)return;state.currentBeach=i;state.offers=[];generateOffers();save();render();toast(`Now flying over ${beaches[i].name}.`)}
+function setPage(id){state.currentPage=id;save();el.pages.forEach(p=>p.classList.toggle('active',p.id===id));el.nav.forEach(btn=>btn.classList.toggle('active',btn.dataset.page===id))}
+function renderTop(){const s=stats();el.cash.textContent=cash(state.money);el.career.textContent=state.careerMiles.toFixed(1)+' mi';el.beach.textContent=beaches[state.currentBeach].name;el.contract.textContent=state.contract?`${state.contract.business} (${state.contract.flightsRemaining}/${state.contract.flightsTotal})`:'None';el.scene.className=`scene stage-${stage()}`;el.banner.textContent=state.contract?state.contract.business.toUpperCase():'NO CONTRACT';el.playContract.textContent=state.contract?`${state.contract.business} - ${state.contract.flightsRemaining}/${state.contract.flightsTotal} flights left`:'No contract selected';el.playRange.textContent=`${(s.baseRange/(1-s.efficiency)).toFixed(1)} mi on a MED banner`;el.startBtn.hidden=!!flight||!state.contract;el.endBtn.hidden=!flight;el.openContracts.hidden=!!flight}
+function renderFlight(zoneOverride){const z=zoneOverride||beaches[state.currentBeach].zones[0];if(!flight){el.fuelText.textContent='100%';el.fuelBar.style.width='100%';el.distance.textContent='0.00 mi';el.people.textContent='0';el.earnings.textContent='$0'}else{el.fuelText.textContent=`${flight.fuel.toFixed(0)}%`;el.fuelBar.style.width=`${flight.fuel}%`;el.distance.textContent=`${flight.distance.toFixed(2)} mi`;el.people.textContent=num(flight.people);el.earnings.textContent=cash(flight.earnings)}el.zone.textContent=z[0];el.crowd.textContent=`${num(z[1])} people / mile`}
+function renderActiveContract(){if(!state.contract){el.activeContract.innerHTML='<h3>No active contract</h3><div class="meta">Pick one of the offers below. All contracts last multiple flights.</div>';return}const wc=weightClass(state.contract.weight),est=Math.round(beaches[state.currentBeach].avg*Math.max(1,rangeFor(state.contract.weight)));el.activeContract.innerHTML=`<h3>${state.contract.business}</h3><div class="meta">Pay: <strong>$${state.contract.rate.toFixed(3)}/person</strong><br>Weight: <strong>${state.contract.weight} lb</strong> <span class="tag ${wc.key}">${wc.label}</span><br>Flights Remaining: <strong>${state.contract.flightsRemaining}/${state.contract.flightsTotal}</strong><br>Estimated audience per full flight: <strong>${num(est)}</strong></div><button id="startFromContracts" ${flight?'disabled':''}>${flight?'Flight Active':'Start Flight'}</button>`;const b=$('startFromContracts');if(b)b.addEventListener('click',startFlight)}
+function renderOffers(){if(!state.offers.length&&!state.contract)generateOffers();el.contracts.innerHTML='';for(const o of state.offers){const wc=weightClass(o.weight),est=Math.round(beaches[o.beachIndex].avg*Math.max(1,rangeFor(o.weight)));const card=document.createElement('article');card.className='card';card.innerHTML=`<h3>${o.business}</h3><div class="meta">Pay: <strong>$${o.rate.toFixed(3)}/person</strong><br>Weight: <strong>${o.weight} lb</strong> <span class="tag ${wc.key}">${wc.label}</span><br>Contract Length: <strong>${o.flightsTotal} flights</strong><br>Estimated audience per full flight: <strong>${num(est)}</strong></div><button type="button" ${wc.key==='locked'?'disabled':''}>Accept Contract</button>`;card.querySelector('button').addEventListener('click',()=>accept(o.id));el.contracts.appendChild(card)}if(!state.offers.length&&state.contract)el.contracts.innerHTML='<div class="card"><div class="meta">Finish the current contract to get new offers.</div></div>'}
+function renderUpgrades(){el.upgrades.innerHTML='';for(const b of branches){const branch=document.createElement('section');branch.className='branch';branch.innerHTML=`<h3>${b.name}</h3><p>${b.desc}</p>`;b.nodes.forEach((n,i)=>{const bought=has(n[0]);const prior=i===0||has(b.nodes[i-1][0]);const up=document.createElement('div');up.className=`upgrade ${bought?'bought':''}`;up.innerHTML=`<h4>${n[1]}</h4><small>${cash(n[2])} - ${n[3]}</small><button type="button" ${bought||!prior||state.money<n[2]||flight?'disabled':''}>${bought?'Bought':'Buy'}</button>`;up.querySelector('button').addEventListener('click',()=>buy(n[0]));branch.appendChild(up)});el.upgrades.appendChild(branch)}}
+function renderBeaches(){el.beaches.innerHTML='';beaches.forEach((b,i)=>{const unlocked=state.careerMiles>=b.unlock;const current=i===state.currentBeach;const card=document.createElement('article');card.className='card';card.innerHTML=`<h3>${b.name}</h3><div class="meta">Unlock: <strong>${num(b.unlock)} career miles</strong><br>Average audience: <strong>${num(b.avg)} / mile</strong><br>${b.desc}</div><button type="button" ${!unlocked||current?'disabled':''}>${current?'Current Beach':'Travel Here'}</button>`;card.querySelector('button').addEventListener('click',()=>travel(i));el.beaches.appendChild(card)})}
+function renderStats(){const s=stats(),next=nextBeachGoal();el.stats.innerHTML=`<div class="statcard"><span>Total Flights</span><strong>${num(state.flights)}</strong></div><div class="statcard"><span>Total People Reached</span><strong>${num(state.totalPeople)}</strong></div><div class="statcard"><span>Plane Stage</span><strong>${stage()}</strong></div><div class="statcard"><span>Next Beach</span><strong>${next?next.name:'All unlocked'}</strong></div><div class="statcard"><span>Current Capacity</span><strong>${s.capacity[0]} / ${s.capacity[1]} / ${s.capacity[2]}</strong></div><div class="statcard"><span>MED Range</span><strong>${(s.baseRange/(1-s.efficiency)).toFixed(1)} mi</strong></div>`}
+function renderBuildings(){el.bg.innerHTML='';const defs=[[38,88],[62,126],[44,96],[88,150],[54,118],[110,182],[46,102],[72,140],[40,86]];defs.forEach(([w,h])=>{const d=document.createElement('div');d.className='tower';d.style.width=w+'px';d.style.height=h+'px';el.bg.appendChild(d)})}
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2200)}
+function hook(){document.addEventListener('dblclick',e=>e.preventDefault());let lastTouch=0;document.addEventListener('touchend',e=>{const now=Date.now();if(now-lastTouch<350)e.preventDefault();lastTouch=now},{passive:false});document.addEventListener('gesturestart',e=>e.preventDefault());el.startBtn.addEventListener('click',startFlight);el.endBtn.addEventListener('click',()=>endFlight('manual'));el.openContracts.addEventListener('click',()=>setPage('contractsPage'));el.refresh.addEventListener('click',()=>{if(state.contract||flight){toast('Finish the current contract before refreshing offers.');return}generateOffers();renderOffers();toast('New contract offers ready.')});el.reset.addEventListener('click',()=>{if(!confirm('Reset all Banner Miles progress?'))return;localStorage.removeItem(SAVE);state=fresh();flight=null;generateOffers();render()});el.nav.forEach(btn=>btn.addEventListener('click',()=>setPage(btn.dataset.page)))}
+function render(){renderBuildings();renderTop();renderFlight();renderActiveContract();renderOffers();renderUpgrades();renderBeaches();renderStats();setPage(state.currentPage||'playPage')}
+
+hook();
+if(!state.offers.length&&!state.contract)generateOffers();
+render();
+})();
+</script>
+</body>
+</html>
