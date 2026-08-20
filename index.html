@@ -15,12 +15,21 @@ html,body{margin:0;height:100%;background:#84cdf6;font-family:Arial,sans-serif}
 <script>
 (async()=>{
   try{
-    const response=await fetch('./game.html?v=20260820-2',{cache:'no-store'});
+    const response=await fetch('./game.html?v=20260820-3',{cache:'no-store'});
     if(!response.ok)throw new Error('Game file could not be loaded');
-    let html=await response.text();
-    html=html.replace('</body>','<script src="./patch.js?v=20260820-2"><\\/script></body>');
+    let loader=await response.text();
+
+    const original="const html=await new Response(stream).text();document.open();document.write(html);document.close()";
+    const patched="const html=await new Response(stream).text();const finalHtml=html.replace('</body>','<scr'+'ipt src=\"./patch.js?v=20260820-3\"></scr'+'ipt></body>');document.open();document.write(finalHtml);document.close()";
+
+    if(loader.includes(original)){
+      loader=loader.replace(original,patched);
+    }else{
+      throw new Error('Banner Miles loader format changed');
+    }
+
     document.open();
-    document.write(html);
+    document.write(loader);
     document.close();
   }catch(error){
     console.error(error);
