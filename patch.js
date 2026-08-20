@@ -12,7 +12,9 @@
     .scene.flying .rig{
       animation:bannerMilesFlightBob 1.8s ease-in-out infinite !important;
     }
-    #startFromContracts{
+    #startFromContracts,
+    #startFlightButton,
+    #endFlightButton{
       position:absolute !important;
       width:1px !important;
       height:1px !important;
@@ -23,8 +25,14 @@
       padding:0 !important;
       border:0 !important;
     }
-    #playStartFlightPatch{
-      flex:1;
+    #flightControlPatch{
+      position:absolute;
+      left:50%;
+      bottom:12px;
+      transform:translateX(-50%);
+      min-width:190px;
+      padding:10px 18px;
+      z-index:100;
       border:3px solid #173d59;
       border-radius:11px;
       background:#ffe078;
@@ -33,6 +41,7 @@
       font-size:14px;
       box-shadow:0 3px 0 #173d5930;
     }
+    #flightControlPatch.end-flight{background:#ffb1a5;}
     @keyframes bannerMilesFlightBob{
       0%,100%{transform:translateY(0) scale(var(--rig-scale));}
       50%{transform:translateY(-4px) scale(var(--rig-scale));}
@@ -43,74 +52,84 @@
         left:4% !important;
         top:34% !important;
       }
-      #playStartFlightPatch{font-size:12px;}
+      #flightControlPatch{
+        bottom:8px;
+        min-width:150px;
+        padding:8px 14px;
+        font-size:12px;
+      }
     }
   `;
   document.head.appendChild(style);
 
   const scene=document.getElementById('scene');
-  const endButton=document.getElementById('endFlightButton');
-  const contractValue=document.getElementById('contractValue');
-  const actionRow=document.querySelector('.action-row');
-  const builtInStart=document.getElementById('startFlightButton');
+  if(!scene)return;
 
-  function isFlying(){
-    return !!endButton && !endButton.hidden;
-  }
+  const contractValue=document.getElementById('contractValue');
+  const fuelText=document.getElementById('fuelText');
+  const distanceValue=document.getElementById('distanceValue');
+
+  function builtInStart(){return document.getElementById('startFlightButton');}
+  function internalStart(){return document.getElementById('startFromContracts');}
+  function builtInEnd(){return document.getElementById('endFlightButton');}
 
   function hasContract(){
     if(contractValue){
       const text=(contractValue.textContent||'').trim();
-      return text && text.toLowerCase()!=='none';
+      if(text && text.toLowerCase()!=='none')return true;
     }
-    return !!document.getElementById('startFromContracts');
+    return !!internalStart();
   }
 
-  function ensurePlayStartButton(){
-    if(!actionRow)return;
-
-    if(builtInStart){
-      builtInStart.hidden=!(hasContract()&&!isFlying());
-      if(hasContract()&&!isFlying()) builtInStart.style.display='block';
-      else builtInStart.style.display='none';
-      return;
-    }
-
-    let button=document.getElementById('playStartFlightPatch');
-    if(!button){
-      button=document.createElement('button');
-      button.id='playStartFlightPatch';
-      button.type='button';
-      button.textContent='Start Flight';
-      const openContracts=document.getElementById('openContractsButton');
-      if(openContracts) actionRow.insertBefore(button,openContracts);
-      else actionRow.appendChild(button);
-      button.addEventListener('click',()=>{
-        const internal=document.getElementById('startFromContracts');
-        const original=document.getElementById('startFlightButton');
-        if(original && original!==button){
-          original.click();
-          return;
-        }
-        if(internal) internal.click();
-      });
-    }
-    button.hidden=!(hasContract()&&!isFlying());
+  function isFlying(){
+    const end=builtInEnd();
+    if(end && !end.hidden)return true;
+    const fuel=parseFloat((fuelText?.textContent||'100').replace('%',''));
+    const distance=parseFloat(distanceValue?.textContent||'0');
+    return Number.isFinite(fuel) && Number.isFinite(distance) && fuel<99.9 && distance>0;
   }
 
-  function syncFlightMotion(){
-    if(scene)scene.classList.toggle('flying',isFlying());
-    ensurePlayStartButton();
+  let control=document.getElementById('flightControlPatch');
+  if(!control){
+    control=document.createElement('button');
+    control.id='flightControlPatch';
+    control.type='button';
+    scene.appendChild(control);
+    control.addEventListener('click',()=>{
+      if(isFlying()){
+        const end=builtInEnd();
+        if(end)end.click();
+        return;
+      }
+      const start=builtInStart();
+      if(start){
+        start.click();
+        return;
+      }
+      const internal=internalStart();
+      if(internal)internal.click();
+    });
   }
 
-  const observer=new MutationObserver(syncFlightMotion);
-  if(endButton)observer.observe(endButton,{attributes:true,attributeFilter:['hidden']});
-  if(contractValue)observer.observe(contractValue,{childList:true,subtree:true,characterData:true});
-  if(actionRow)observer.observe(actionRow,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden']});
-  const contractCard=document.getElementById('activeContractCard');
-  if(contractCard)observer.observe(contractCard,{childList:true,subtree:true});
+  function sync(){
+    const flying=isFlying();
+    scene.classList.toggle('flying',flying);
+    if(flying){
+      control.hidden=false;
+      control.textContent='End Flight';
+      control.classList.add('end-flight');
+    }else if(hasContract()){
+      control.hidden=false;
+      control.textContent='Start Flight';
+      control.classList.remove('end-flight');
+    }else{
+      control.hidden=true;
+      control.classList.remove('end-flight');
+    }
+  }
 
-  syncFlightMotion();
-  setTimeout(syncFlightMotion,100);
-  setTimeout(syncFlightMotion,500);
+  const observer=new MutationObserver(sync);
+  observer.observe(document.body,{subtree:true,childList:true,attributes:true,characterData:true});
+  sync();
+  setInterval(sync,250);
 })();
