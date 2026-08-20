@@ -1,6 +1,20 @@
 (()=>{
   'use strict';
 
+  // When this file is loaded by the compressed game loader, intercept the
+  // loader's document.write and inject this patch again into the real game.
+  if(!document.getElementById('scene')){
+    const originalWrite=Document.prototype.write;
+    Document.prototype.write=function(...args){
+      let html=args.map(String).join('');
+      if(html.includes('</body>')&&!html.includes('patch.js?v=20260820-2')){
+        html=html.replace('</body>','<script src="./patch.js?v=20260820-2"><\\/script></body>');
+      }
+      return originalWrite.call(this,html);
+    };
+    return;
+  }
+
   const style=document.createElement('style');
   style.textContent=`
     .rig{
@@ -32,7 +46,6 @@
   const contractCard=document.getElementById('activeContractCard');
 
   function syncFlightMotion(){
-    if(!scene||!endButton)return;
     scene.classList.toggle('flying',!endButton.hidden);
   }
 
@@ -41,13 +54,15 @@
     if(button)button.remove();
   }
 
-  if(endButton){
-    new MutationObserver(syncFlightMotion).observe(endButton,{attributes:true,attributeFilter:['hidden']});
-  }
+  new MutationObserver(syncFlightMotion).observe(endButton,{
+    attributes:true,
+    attributeFilter:['hidden']
+  });
 
-  if(contractCard){
-    new MutationObserver(removeContractStartButton).observe(contractCard,{childList:true,subtree:true});
-  }
+  new MutationObserver(removeContractStartButton).observe(contractCard,{
+    childList:true,
+    subtree:true
+  });
 
   syncFlightMotion();
   removeContractStartButton();
