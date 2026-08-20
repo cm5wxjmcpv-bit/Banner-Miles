@@ -1,41 +1,94 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#78c9f6">
-<title>Banner Miles</title>
-<style>
-html,body{margin:0;height:100%;background:#84cdf6;font-family:Arial,sans-serif}
-#loading{height:100%;display:grid;place-items:center;color:#173d59;font-weight:700}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#78c9f6">
+  <title>Banner Miles</title>
+  <link rel="stylesheet" href="styles.css?v=20260820-clean1">
 </head>
 <body>
-<div id="loading">Loading Banner Miles…</div>
-<script>
-(async()=>{
-  try{
-    const response=await fetch('./game.html?v=20260820-5',{cache:'no-store'});
-    if(!response.ok)throw new Error('Game file could not be loaded');
-    let loader=await response.text();
+<div id="app" class="app">
+  <header class="topbar">
+    <div class="brand"><strong>BANNER MILES</strong><span>Coastal Aerial Advertising</span></div>
+    <div class="topstats">
+      <div class="topstat"><span>Cash</span><strong id="cashValue">$0</strong></div>
+      <div class="topstat"><span>Career</span><strong id="careerMilesValue">0.0 mi</strong></div>
+      <div class="topstat"><span>Beach</span><strong id="beachValue">Driftwood Beach</strong></div>
+      <div class="topstat"><span>Contract</span><strong id="contractValue">None</strong></div>
+    </div>
+  </header>
 
-    const original="const html=await new Response(stream).text();document.open();document.write(html);document.close()";
-    const patched="const html=await new Response(stream).text();const finalHtml=html.replace('</body>','<scr'+'ipt src=\"./patch.js?v=20260820-5\"></scr'+'ipt></body>');document.open();document.write(finalHtml);document.close()";
+  <main class="pages">
+    <section id="playPage" class="page active">
+      <div class="play-layout">
+        <div class="flight-hud">
+          <div class="hudbox fuel-box"><span>Fuel</span><strong id="fuelText">100%</strong><div class="fuel-track"><div id="fuelBar" class="fuel-fill"></div></div></div>
+          <div class="hudbox"><span>Distance</span><strong id="distanceValue">0.00 mi</strong></div>
+          <div class="hudbox"><span>People</span><strong id="peopleValue">0</strong></div>
+          <div class="hudbox"><span>Flight $</span><strong id="flightEarningsValue">$0</strong></div>
+        </div>
 
-    if(loader.includes(original)){
-      loader=loader.replace(original,patched);
-    }else{
-      throw new Error('Banner Miles loader format changed');
-    }
+        <div id="scene" class="scene stage-1">
+          <div class="sun"></div>
+          <div class="cloud cloud-a"></div>
+          <div class="cloud cloud-b"></div>
+          <div class="cloud cloud-c"></div>
 
-    document.open();
-    document.write(loader);
-    document.close();
-  }catch(error){
-    console.error(error);
-    document.getElementById('loading').textContent='Banner Miles failed to load. Refresh the page.';
-  }
-})();
-</script>
+          <div class="background-wrap"><div id="buildingTrack" class="building-track"></div></div>
+          <div class="sand"></div>
+          <div class="beach-wrap"><div id="beachTrack" class="beach-track"></div></div>
+          <div class="water"><div class="water-sprite"></div></div>
+
+          <div id="rig" class="rig">
+            <div id="banner" class="banner">NO CONTRACT</div>
+            <div class="tow-line"></div>
+            <div class="plane">
+              <div class="smoke smoke-a"></div><div class="smoke smoke-b"></div>
+              <div class="tail-fin"></div><div class="tail-wing"></div><div class="tail-boom"></div>
+              <div class="main-wing"></div><div class="gear-strut"></div><div class="wheel"></div><div class="tail-wheel"></div>
+              <div class="plane-body"></div><div class="canopy"></div><div class="engine"></div><div class="nose"></div><div class="propeller"></div>
+            </div>
+          </div>
+
+          <div class="zone-card"><span id="zoneName">Quiet Shore</span><strong id="crowdRate">150 people / mile</strong></div>
+          <button id="flightButton" class="flight-button" type="button">Choose a Contract</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="contractsPage" class="page menu-page">
+      <div class="menu-shell">
+        <div class="menu-head"><div><h2>Banner Contracts</h2><p>Choose a contract here. Flights are started only from the Play screen.</p></div><button id="refreshContractsButton" class="secondary" type="button">New Offers</button></div>
+        <div id="activeContractCard" class="active-contract"></div>
+        <div class="scroll-area"><div id="contractsGrid" class="card-grid"></div></div>
+      </div>
+    </section>
+
+    <section id="upgradesPage" class="page menu-page">
+      <div class="menu-shell"><div class="menu-head"><div><h2>Plane Upgrades</h2><p>Power, fuel, efficiency, and advertising.</p></div></div><div class="scroll-area"><div id="upgradeTree" class="upgrade-grid"></div></div></div>
+    </section>
+
+    <section id="beachesPage" class="page menu-page">
+      <div class="menu-shell"><div class="menu-head"><div><h2>Beaches</h2><p>Unlock new coasts with Career Miles.</p></div></div><div class="scroll-area"><div id="beachGrid" class="card-grid"></div></div></div>
+    </section>
+
+    <section id="statsPage" class="page menu-page">
+      <div class="menu-shell"><div class="menu-head"><div><h2>Stats</h2><p>Current plane and career progress.</p></div></div><div class="scroll-area"><div id="statsGrid" class="stats-grid"></div></div><button id="resetButton" class="secondary danger" type="button">Reset Save</button></div>
+    </section>
+  </main>
+
+  <nav class="bottom-nav">
+    <button data-page="playPage" class="active">Play</button>
+    <button data-page="contractsPage">Contracts</button>
+    <button data-page="upgradesPage">Upgrades</button>
+    <button data-page="beachesPage">Beaches</button>
+    <button data-page="statsPage">Stats</button>
+  </nav>
+</div>
+<div id="toast" class="toast"></div>
+<script src="game.js?v=20260820-clean1"></script>
 </body>
 </html>
